@@ -15,33 +15,39 @@ $APPLICATION->AddHeadScript("/geo-ip/calendar/js/script.js");
 //echo \Bitrix\Iblock\Iblock::wakeUp(3)->getEntityDataClass(); //Где 3 - ID инфоблока «Новости»
 
 $elements = \Bitrix\Iblock\Elements\ElementPropbNewsTable::getList([
-    'select' => ['NAME', 'PREVIEW_TEXT'],
+    'select' => ['DATE_CREATE', 'NAME', 'PREVIEW_TEXT'],
     'filter' => ['=ACTIVE' => 'Y'],
 ])->fetchAll();
 function getJson($elements)
 {
-
+    $data = '[';
+    foreach ($elements as $item) {
+        $data .= '{ "date": "' . $item['DATE_CREATE'] . '", "title": "' . $item['NAME'] . '", "description": "' . $item['PREVIEW_TEXT'] . '"}';
+    }
+    $data .= ']';
+    return $data;
 }
 
-foreach ($elements as $element) {
-    echo $element['ID'] . "<br>";
-    echo "<b style='color:red;'>" . $element['NAME'] . "</b>" . "<br>";
-    echo $element['PREVIEW_TEXT'] . "<br>";
-}
-
+$events = getJson($elements);
+//echo $events;
 ?>
     <div id="eventCalendar" style="width: 300px; margin: 50px auto;"></div>
     <script>
         $(function () {
-            var data = <?= $events;?>;
+            data = [
+                { "date": "2015-09-21 10:15:20", "title": "Событие 1", "description": "Lorem Ipsum dolor set", "url": "http://www.event3.com/" },
+                { "date": "2015-09-21 10:15:20", "title": "Событие 2", "description": "Lorem Ipsum dolor set", "url": "" },
+                { "date": "2015-09-01 10:15:20", "title": "Событие 3", "description": "Lorem Ipsum dolor set", "url": "http://www.event3.com/" },
+                { "date": "2015-10-21 10:15:20", "title": "Событие 4", "description": "Lorem Ipsum dolor set", "url": "http://www.event3.com/" },
+            ];
             $('#eventCalendar').eventCalendar({
                 jsonData: data,
-                // eventsjson: 'data.json',
                 jsonDateFormat: 'human',
                 startWeekOnMonday: true,
                 openEventInNewWindow: true,
                 dateFormat: 'dddd DD-MM-YYYY',
                 showDescription: true,
+                cacheJson: false,
                 locales: {
                     locale: "ru",
                     txt_noEvents: "Нет запланированных событий",
