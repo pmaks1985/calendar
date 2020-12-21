@@ -5,7 +5,6 @@ $APPLICATION->SetAdditionalCSS("/geo-ip/calendar/css/eventCalendar.css");
 $APPLICATION->SetAdditionalCSS("/geo-ip/calendar/css/eventCalendar_theme_responsive.css");
 $APPLICATION->AddHeadScript("/geo-ip/calendar/js/moment.js");
 $APPLICATION->AddHeadScript("/geo-ip/calendar/js/jquery.eventCalendar.js");
-$APPLICATION->AddHeadScript("/geo-ip/calendar/js/script.js");
 ?>
 <?php
 //Подключим модуль «Информационные блоки»
@@ -22,32 +21,27 @@ function getJson($elements)
 {
     $data = '[';
     foreach ($elements as $item) {
-        $data .= '{ "date": "' . $item['DATE_CREATE'] . '", "title": "' . $item['NAME'] . '", "description": "' . $item['PREVIEW_TEXT'] . '"}';
+        $data .= '{ "date": "' . date_format(date_create($item['DATE_CREATE']), 'Y-m-d H:i:s') . '", "title": "' . str_replace("\"", "", preg_replace('/\s+/', ' ', strip_tags($item['NAME']))) . '", "description": "' . str_replace("\"", "", preg_replace('/\s+/', ' ', strip_tags($item['PREVIEW_TEXT']))) . '"},';
     }
     $data .= ']';
     return $data;
 }
 
 $events = getJson($elements);
-//echo $events;
+//print_r($events);
 ?>
     <div id="eventCalendar" style="width: 300px; margin: 50px auto;"></div>
     <script>
         $(function () {
-            data = [
-                { "date": "2015-09-21 10:15:20", "title": "Событие 1", "description": "Lorem Ipsum dolor set", "url": "http://www.event3.com/" },
-                { "date": "2015-09-21 10:15:20", "title": "Событие 2", "description": "Lorem Ipsum dolor set", "url": "" },
-                { "date": "2015-09-01 10:15:20", "title": "Событие 3", "description": "Lorem Ipsum dolor set", "url": "http://www.event3.com/" },
-                { "date": "2015-10-21 10:15:20", "title": "Событие 4", "description": "Lorem Ipsum dolor set", "url": "http://www.event3.com/" },
-            ];
+            var data = <?=$events;?>;
             $('#eventCalendar').eventCalendar({
                 jsonData: data,
+                // eventsjson: 'data.json',
                 jsonDateFormat: 'human',
-                startWeekOnMonday: true,
+                startWeekOnMonday: false,
                 openEventInNewWindow: true,
                 dateFormat: 'dddd DD-MM-YYYY',
-                showDescription: true,
-                cacheJson: false,
+                showDescription: false,
                 locales: {
                     locale: "ru",
                     txt_noEvents: "Нет запланированных событий",
