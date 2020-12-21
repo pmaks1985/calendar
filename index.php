@@ -13,22 +13,21 @@ $APPLICATION->AddHeadScript("/geo-ip/calendar/js/jquery.eventCalendar.js");
 //Получить имя ORM класса для работы с инфоблоком
 //echo \Bitrix\Iblock\Iblock::wakeUp(3)->getEntityDataClass(); //Где 3 - ID инфоблока «Новости»
 
-$elements = \Bitrix\Iblock\Elements\ElementPropbNewsTable::getList([
-    'select' => ['DATE_CREATE', 'NAME', 'PREVIEW_TEXT'],
+$elements = \Bitrix\Iblock\Elements\ElementPropbNewsTable::getList([ //В $elements получаю выборку параметров, указанных в 'select'
+    'select' => ['DATE_CREATE', 'NAME', 'PREVIEW_TEXT', 'CODE'],
     'filter' => ['=ACTIVE' => 'Y'],
 ])->fetchAll();
-function getJson($elements)
+function getJson($elements) //Функция формирования JSON, для правильного формирования url, в файле jquery.eventCalendar.js, 420 строка, указал путь для раздела /news/
 {
     $data = '[';
     foreach ($elements as $item) {
-        $data .= '{ "date": "' . date_format(date_create($item['DATE_CREATE']), 'Y-m-d H:i:s') . '", "title": "' . str_replace("\"", "", preg_replace('/\s+/', ' ', strip_tags($item['NAME']))) . '", "description": "' . str_replace("\"", "", preg_replace('/\s+/', ' ', strip_tags($item['PREVIEW_TEXT']))) . '"},';
+        $data .= '{ "date": "' . date_format(date_create($item['DATE_CREATE']), 'Y-m-d H:i:s') . '", "title": "' . str_replace("\"", "", preg_replace('/\s+/', ' ', strip_tags($item['NAME']))) . '", "description": "' . str_replace("\"", "", preg_replace('/\s+/', ' ', strip_tags($item['PREVIEW_TEXT']))) . '","url": "' . $item['CODE'] . "/" . '"},';
     }
     $data .= ']';
     return $data;
 }
 
 $events = getJson($elements);
-//print_r($events);
 ?>
     <div id="eventCalendar" style="width: 300px; margin: 50px auto;"></div>
     <script>
@@ -36,12 +35,11 @@ $events = getJson($elements);
             var data = <?=$events;?>;
             $('#eventCalendar').eventCalendar({
                 jsonData: data,
-                // eventsjson: 'data.json',
                 jsonDateFormat: 'human',
-                startWeekOnMonday: false,
+                startWeekOnMonday: true,
                 openEventInNewWindow: true,
                 dateFormat: 'dddd DD-MM-YYYY',
-                showDescription: false,
+                showDescription: true,
                 locales: {
                     locale: "ru",
                     txt_noEvents: "Нет запланированных событий",
