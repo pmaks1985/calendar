@@ -29,43 +29,51 @@ function getJson($elements) //Функция формирования JSON, дл
 
 $events = getJson($elements);
 ?>
-    <div id="eventCalendar" style="width: 300px; margin: 50px auto;"></div>
-    <script>
-        $(function () {
-            var data = <?=$events;?>;
-            $('#eventCalendar').eventCalendar({
-                jsonData: data,
-                jsonDateFormat: 'human',
-                startWeekOnMonday: true,
-                openEventInNewWindow: true,
-                dateFormat: 'dddd DD-MM-YYYY',
-                showDescription: true,
-                locales: {
-                    locale: "ru",
-                    txt_noEvents: "Нет запланированных событий",
-                    txt_SpecificEvents_prev: "",
-                    txt_SpecificEvents_after: "события:",
-                    txt_NextEvents: "Следующие события:",
-                    txt_GoToEventUrl: "Смотреть",
-                    moment: {
-                        "months": ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
-                            "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
-                        ],
-                        "monthsShort": ["Янв", "Фев", "Мар", "Апр", "Май", "Июн",
-                            "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
-                        ],
-                        "weekdays": ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг",
-                            "Пятница", "Суббота"
-                        ],
-                        "weekdaysShort": ["Вс", "Пн", "Вт", "Ср", "Чт",
-                            "Пт", "Сб"
-                        ],
-                        "weekdaysMin": ["Вс", "Пн", "Вт", "Ср", "Чт",
-                            "Пт", "Сб"
-                        ]
-                    }
+<div id="eventCalendar" style="width: 300px; margin: 50px auto;"></div>
+<script>
+    $(function() {
+        var data = <?= $events; ?>;
+        $('#eventCalendar').eventCalendar({
+            jsonData: data,
+            jsonDateFormat: 'human',
+            startWeekOnMonday: true,
+            openEventInNewWindow: true,
+            dateFormat: 'dddd DD-MM-YYYY',
+            showDescription: true,
+            locales: {
+                locale: "ru",
+                txt_noEvents: "Нет запланированных событий",
+                txt_SpecificEvents_prev: "",
+                txt_SpecificEvents_after: "события:",
+                txt_NextEvents: "Следующие события:",
+                txt_GoToEventUrl: "Смотреть",
+                moment: {
+                    "months": ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+                        "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+                    ],
+                    "monthsShort": ["Янв", "Фев", "Мар", "Апр", "Май", "Июн",
+                        "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
+                    ],
+                    "weekdays": ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг",
+                        "Пятница", "Суббота"
+                    ],
+                    "weekdaysShort": ["Вс", "Пн", "Вт", "Ср", "Чт",
+                        "Пт", "Сб"
+                    ],
+                    "weekdaysMin": ["Вс", "Пн", "Вт", "Ср", "Чт",
+                        "Пт", "Сб"
+                    ]
                 }
-            });
+            }
         });
-    </script>
+        setTimeout(function() {
+            // установим обработчик нажатия кнопки мыши на элементе
+            $('body li.today a').on('click', function() {
+                console.log("Hi!");
+            });
+            // вызовем событие нажатия на элемент, что приведет к выполнению обработчика
+            $('body li.today a').trigger('click');
+        }, 500);
+    });
+</script>
 <? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>
