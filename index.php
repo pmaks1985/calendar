@@ -13,15 +13,15 @@ $APPLICATION->AddHeadScript("/geo-ip/calendar/js/jquery.eventCalendar.js");
 //Получить имя ORM класса для работы с инфоблоком
 //echo \Bitrix\Iblock\Iblock::wakeUp(3)->getEntityDataClass(); //Где 3 - ID инфоблока «Новости»
 
-$elements = \Bitrix\Iblock\Elements\ElementPropbNewsTable::getList([ //В $elements получаю выборку параметров, указанных в 'select'
-    'select' => ['DATE_CREATE', 'NAME', 'PREVIEW_TEXT', 'CODE'],
+$elements = \Bitrix\Iblock\Elements\ElementPropbCalendarTable::getList([ //В $elements получаю выборку параметров, указанных в 'select'
+    'select' => ['CALENDAR_DATE_' => 'CALENDAR_DATE', 'NAME', 'PREVIEW_TEXT', 'CODE'],
     'filter' => ['=ACTIVE' => 'Y'],
 ])->fetchAll();
-function getJson($elements) //Функция формирования JSON, для правильного формирования url, в файле jquery.eventCalendar.js, 420 строка, указал путь для раздела /news/
+function getJson($elements) //Функция формирования JSON, для правильного формирования url, в файле jquery.eventCalendar.js, 420 строка, указал путь для раздела /calendar/
 {
     $data = '[';
     foreach ($elements as $item) {
-        $data .= '{ "date": "' . date_format(date_create($item['DATE_CREATE']), 'Y-m-d H:i:s') . '", "title": "' . str_replace("\"", "", preg_replace('/\s+/', ' ', strip_tags($item['NAME']))) . '", "description": "' . str_replace("\"", "", preg_replace('/\s+/', ' ', strip_tags($item['PREVIEW_TEXT']))) . '","url": "' . $item['CODE'] . "/" . '"},';
+        $data .= '{ "date": "' . date_format(date_create($item['CALENDAR_DATE_VALUE']), 'Y-m-d H:i:s') . '", "title": "' . str_replace("\"", "", preg_replace('/\s+/', ' ', strip_tags($item['NAME']))) . '", "description": "' . str_replace("\"", "", preg_replace('/\s+/', ' ', strip_tags($item['PREVIEW_TEXT']))) . '","url": "' . $item['CODE'] . "/" . '"},';
     }
     $data .= ']';
     return $data;
@@ -38,7 +38,8 @@ $events = getJson($elements);
             jsonDateFormat: 'human',
             startWeekOnMonday: true,
             openEventInNewWindow: true,
-            dateFormat: 'dddd DD-MM-YYYY',
+            dateFormat: "dddd DD-MM-YYYY",
+            eventsLimit: 2,
             showDescription: true,
             locales: {
                 locale: "ru",
@@ -67,11 +68,7 @@ $events = getJson($elements);
             }
         });
         setTimeout(function() {
-            // установим обработчик нажатия кнопки мыши на элементе
-            $('body li.today a').on('click', function() {
-                console.log("Hi!");
-            });
-            // вызовем событие нажатия на элемент, что приведет к выполнению обработчика
+            // кликаем по текущей дате
             $('body li.today a').trigger('click');
         }, 500);
     });
